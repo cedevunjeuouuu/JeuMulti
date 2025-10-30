@@ -27,9 +27,11 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    public Transform CameraLookMe(Transform playerTransform)
+    public CameraScript CameraLookMe(Transform playerTransform)
     {
-        GameObject newCamera = Instantiate(camera, playerTransform);
-        return newCamera.transform;
+        GameObject camObject = Instantiate(camera, playerTransform);
+        CameraScript newCamera = camObject.GetComponent<CameraScript>();
+        newCamera.cible = playerTransform;
+        return newCamera;
     }
 }

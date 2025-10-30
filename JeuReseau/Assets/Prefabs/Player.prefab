@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5930276086752971108}
   - component: {fileID: 2447503974534430573}
   - component: {fileID: 726227079650481953}
-  - component: {fileID: 9152928736790734059}
+  - component: {fileID: 4063719138436300432}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -90,8 +90,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &9152928736790734059
-CapsuleCollider:
+--- !u!65 &4063719138436300432
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -108,11 +108,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  serializedVersion: 3
+  m_Size: {x: 0.99999994, y: 1.0639285, z: 0.99999994}
+  m_Center: {x: 0, y: -0.46803683, z: 0}
 --- !u!1 &2005795120278185458
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +147,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5930276086752971108}
+  - {fileID: 4542134692605688813}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3653556435272229545
@@ -163,7 +162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2709081034
+  GlobalObjectIdHash: 3448811966
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -191,11 +190,15 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   prefab: {fileID: 4070009724222465613, guid: 6e249f2027a172746b0546d934c28aa9, type: 3}
   message: 
-  moveSpeed: 10
+  moveSpeed: 15
   rb: {fileID: -7923460418328634742}
+  test: 0
   jumpForce: 10
-  fallSpeed: 15
-  canJump: 1
+  fallSpeed: 18
+  cameraReference: {fileID: 0}
+  crouchSpeed: 8
+  cubeCrouch: {fileID: 2250260877071616966}
+  sprintMultiplier: 25
 --- !u!114 &-7738398708377838105
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,3 +310,56 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.5950796, y: 0.09387107, z: 0.5662033}
   m_Center: {x: -0.0032674624, y: -0.992569, z: 0.0028589866}
+--- !u!1 &2250260877071616966
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4542134692605688813}
+  - component: {fileID: 1028399145671496570}
+  m_Layer: 0
+  m_Name: TopCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4542134692605688813
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2250260877071616966}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.536, z: 0}
+  m_LocalScale: {x: 1.0148969, y: 0.9133971, z: 1.0148969}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7021339051184204633}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1028399145671496570
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2250260877071616966}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
+  m_Center: {x: 0, y: 0, z: 0}

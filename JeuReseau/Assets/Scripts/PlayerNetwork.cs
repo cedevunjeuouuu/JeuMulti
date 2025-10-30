@@ -1,8 +1,10 @@
 using System;
+using DG.Tweening;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Components;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -22,13 +24,29 @@ public class PlayerNetwork : NetworkBehaviour
     
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private bool test;
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float fallSpeed = 10f;
+    [SerializeField] private CameraScript cameraReference;
+    [SerializeField] private float crouchSpeed = 8f;
+    [SerializeField] private GameObject cubeCrouch;
+    [SerializeField][Range(0f, 100f)] private float sprintMultiplier;
+    [SerializeField] private float tweenDuration = 0.2f;
 
     private Transform cameraTransform;
-    [SerializeField] private bool canJump = true;
+    private bool canJump = true;
     private Vector3 direction;
-    
+    private bool sprinting = false;
+    private bool crouching = false;
+    private float baseMoveSpeed;
+    private int groundMask;
+
+
+    private void Awake()
+    {
+        baseMoveSpeed = moveSpeed;
+        groundMask = LayerMask.GetMask("Ground");
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -43,7 +61,8 @@ public class PlayerNetwork : NetworkBehaviour
         };
         if (IsOwner)
         {
-            cameraTransform = GameManager.INSTANCE.CameraLookMe(transform);
+            cameraReference = GameManager.INSTANCE.CameraLookMe(transform);
+            cameraTransform = cameraReference.transform;
         }
     }
 
@@ -60,6 +79,34 @@ public class PlayerNetwork : NetworkBehaviour
         Vector3 deplacement = verticalInput * camForward + horizontalInput * cameraTransform.right;
         Vector3 deplacementFinal = Vector3.ClampMagnitude(deplacement,1) * moveSpeed;
         
+        if (Vector3.Distance(deplacementFinal, Vector3.zero)<= 5f) 
+        {
+            sprinting = false;
+            cameraReference.ChangeFov(80f, tweenDuration);
+        }
+        
+        if (Input.GetButtonDown("Sprint"))
+        {
+            sprinting = !sprinting;
+            if (sprinting && !crouching)
+            {
+                cameraReference.ChangeFov(100f, tweenDuration);
+            }
+            else
+            {
+                cameraReference.ChangeFov(80f, tweenDuration);
+            }
+        }
+        if (sprinting && !crouching)
+        {
+            moveSpeed = baseMoveSpeed + baseMoveSpeed * (sprintMultiplier / 100);
+        }
+        else if (!crouching)
+        {
+            moveSpeed = baseMoveSpeed;
+        }
+        
+        
         if (Input.GetButtonDown("Jump") && canJump)
         {
             rb.linearVelocity = new Vector3(deplacementFinal.x, rb.linearVelocity.y +jumpForce, deplacementFinal.z);
@@ -69,7 +116,28 @@ public class PlayerNetwork : NetworkBehaviour
         {
             rb.linearVelocity = new Vector3(deplacementFinal.x, rb.linearVelocity.y - fallSpeed * Time.deltaTime, deplacementFinal.z);
         }
+
+        // pour mettre canjump a true je met un empty au pied et je check si c'est assez proche du ground mais faut que je trouve un moyen de recup le transform (avec ontriggerenter other.transform?)
         
+
+        if (Input.GetButtonDown("Crouch"))
+        {
+            crouching = !crouching;
+            if (crouching)
+            {
+                cubeCrouch.SetActive(false);
+                DOTween.To(() => cameraReference.hauteur, x => cameraReference.hauteur = x, cameraReference.hauteur / 2, tweenDuration);
+                moveSpeed = crouchSpeed;
+                cameraReference.ChangeFov(80f, tweenDuration);
+            }
+            else
+            {
+                cubeCrouch.SetActive(true);
+                DOTween.To(() => cameraReference.hauteur, x => cameraReference.hauteur = x, cameraReference.hauteur * 2, tweenDuration);
+                moveSpeed = baseMoveSpeed;
+            }
+        }
+
         
         
         /*
@@ -104,11 +172,6 @@ public class PlayerNetwork : NetworkBehaviour
     {
         spawnedObjectTransform = Instantiate(prefab,transform.position + new Vector3(0,Random.Range(2f,8f),0), Quaternion.identity).transform;
         spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        canJump = true;
     }
 }
 
